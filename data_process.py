@@ -20,16 +20,20 @@ while(cap.isOpened()):
     print(i)
     i=i+1
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = gray[40:395, 23:378]
     if ret==True:
         # write the flipped frame
         out.write(gray)
     frames.append(gray)
     flag =True
     if(flag):
-        for j in gray.length():
+        print(str(gray.ndim) + "\n"+str(gray.shape) + "\n" + str(gray.size))
+        flag = False
+    """if(flag):
+        for j in gray.():
             for k in gray[0].length():
                 print (gray[j][k] + " ")
-        flag = False
+        flag = False"""
    
     cv2.imshow('frame',gray)
     if cv2.waitKey(1) & 0xFF == ord('q'):
