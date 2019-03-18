@@ -1,44 +1,24 @@
 # -*- coding: utf-8 -*-
-
-import imutils
-import cv2
+import pickle
+import os
 import numpy as np
+from Read_csv import data, folder
+from VidToMatrix import VidToMatrix
 
-interval = 30
-outfilename = 'output.avi'
-threshold=100.
-fps = 10
+vid_counter=0
+for i in range(len(data)):
+    for file in os.listdir(folder+"\\"+str(data.Dir[i])):
+        if file.endswith(".avi"):
+            if "depth" not in file:
+                all_data = (VidToMatrix(os.path.join(folder+"\\"+str(data.Dir[i]),file),data.Class[i]))
+                vid_counter = vid_counter+1
+                with open('Data\data' + str(vid_counter) + '.txt', 'wb') as fp:
+                    pickle.dump(all_data, fp)
+                
+                
+           
 
 
-cap = cv2.VideoCapture('2.avi')
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-out = cv2.VideoWriter('output.avi',fourcc, 20.0, (480,640))
-i=1
-frames=[]
-while(cap.isOpened()):
-    ret, frame = cap.read()
-    print(i)
-    i=i+1
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray = gray[40:395, 23:378]
-    if ret==True:
-        # write the flipped frame
-        out.write(gray)
-    frames.append(gray)
-    flag =True
-    if(flag):
-        print(str(gray.ndim) + "\n"+str(gray.shape) + "\n" + str(gray.size))
-        flag = False
-    """if(flag):
-        for j in gray.():
-            for k in gray[0].length():
-                print (gray[j][k] + " ")
-        flag = False"""
-   
-    cv2.imshow('frame',gray)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-         
-cap.release()
-cv2.destroyAllWindows()
+
+
 
