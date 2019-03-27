@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 import pickle
 import os
@@ -14,7 +15,6 @@ for i in range(len(data)):
                 vid_counter = vid_counter+1
                 with open('Data\data' + str(vid_counter) + '.txt', 'wb') as fp:
                     pickle.dump(all_data, fp)
-                
                 
            
 
