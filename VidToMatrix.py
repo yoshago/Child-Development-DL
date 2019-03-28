@@ -11,7 +11,7 @@ def VidToMatrix(file, label):
     while(ret):
         i=i+1
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        gray = gray[40:395, 23:378]
+        gray = gray[0:395, 0:378]
         frames.append(gray)
         if i%150==0:
             all_frames.append([frames, label])
