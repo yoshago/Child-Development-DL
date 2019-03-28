@@ -19,7 +19,7 @@ def VidToMatrix(file, label):
         ret, frame = cap.read()      
         
     if len(frames)>0:
-        all_frames.append(frames)
+        all_frames.append([frames, label])
     cap.release()
     print(len(all_frames))
     return all_frames

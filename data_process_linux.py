@@ -4,7 +4,7 @@ import os
 import numpy as np
 from Read_csv import data, folder
 from VidToMatrix import VidToMatrix
-from prepare import prepare
+from prepare_data import prepare
 """
 exporting data to .txt file in two ways:
     1. each video to .txt file

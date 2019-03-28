@@ -12,8 +12,9 @@ import keras
 import h5py
 
 
+
 ## input layer
-input_layer = Input((356, 356, 181, 1))
+input_layer = Input((356, 356, 150, 1))
 
 ## convolutional layers
 conv_layer1 = Conv3D(filters=8, kernel_size=(3, 3, 3), activation='relu')(input_layer)
