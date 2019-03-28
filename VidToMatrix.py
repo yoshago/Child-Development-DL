@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def VidToMatrix(file, label):
+def VidToMatrix(file, label, flag):
     cap = cv2.VideoCapture(file)
     frames=[]
     ret = True
@@ -11,7 +11,9 @@ def VidToMatrix(file, label):
     while(ret):
         i=i+1
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        gray = gray[0:395, 0:378]
+        gray = gray[40:395, 23:378]
+        if not flag:
+            gray = gray[0:355, 0:355]
         frames.append(gray)
         if i%150==0:
             all_frames.append([frames, label])
