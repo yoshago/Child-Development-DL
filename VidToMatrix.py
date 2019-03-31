@@ -1,27 +1,35 @@
 import cv2
 import numpy as np
+from Feature import Feature
 
-def VidToMatrix(file, label, flag):
+def VidToMatrix(file, label, format, name):
     cap = cv2.VideoCapture(file)
     frames=[]
     ret = True
     ret, frame = cap.read()
     all_frames = []
-    i = 0
+    frame_counter = 0
     while(ret):
-        i=i+1
+        frame_counter=frame_counter+1
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        gray = gray[40:395, 23:378]
-        if not flag:
-            gray = gray[0:355, 0:355]
+        if format==1:
+            gray = gray[40:380, 23:363]
+        elif format==2:
+            gray = gray[0:340, 0:340]
+            gray = np.pad(gray,((0,0),(0,4)),'constant')
+        elif format==3:
+            gray = gray[0:340, 20:360]
+        elif format==4:
+            gray = gray[0:340, 23:363]                     
+        
+        
         frames.append(gray)
-        if i%150==0:
-            all_frames.append([frames, label])
-            frames= []
+        if frame_counter%150==0:
+            all_frames.append(Feature(frames,name,label))
+            frames = []
         ret, frame = cap.read()      
         
-    if len(frames)>0:
-        all_frames.append([frames, label])
+
     cap.release()
     print(len(all_frames))
     return all_frames

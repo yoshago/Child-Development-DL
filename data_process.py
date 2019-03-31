@@ -15,9 +15,12 @@ for i in range(len(data)):
     for file in os.listdir(folder+"\\"+str(data.Dir[i])):
         if file.endswith(".avi"):
             if "depth" not in file:
-                flag = True
-                if data.Dir[i] == 19: flag =False
-                all_data = (VidToMatrix(os.path.join(folder+"\\"+str(data.Dir[i]),file),data.Class[i], flag))
+                classification = [0,0,0,0]
+                classification[data.Class[i]-1]=1
+                name = str(data.Dir[i])
+                if name[-1]=='a' or name[-1]=='b':
+                    name = name[:-1]
+                all_data = VidToMatrix(os.path.join(folder+"\\"+str(data.Dir[i]),file),classification, int(data.format[i]),name)
                 vid_counter = vid_counter+1
                 with open('Data\data' + str(vid_counter) + '.txt', 'wb') as fp:
                     pickle.dump(all_data, fp)
