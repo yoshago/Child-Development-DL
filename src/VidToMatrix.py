@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from Feature import Feature
+from src.Feature import Feature
 
 def VidToMatrix(file, label, format, name):
     cap = cv2.VideoCapture(file)
