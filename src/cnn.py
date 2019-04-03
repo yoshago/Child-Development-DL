@@ -7,6 +7,13 @@ from keras.layers.convolutional import (MaxPooling3D, Conv3D)
 from keras.models import Sequential
 
 
+with open('Data/data' + str(16) + '.txt', 'rb') as test_video:
+    test_record_array = pickle.load(test_video)
+    for i in test_record_array:
+        i.matrix=np.array(i.matrix)
+        print(i.matrix.shape)
+
+'''
 #define test
 with open('Data/data' + str(16) + '.txt', 'rb') as test_video:
     test_record_array = pickle.load(test_video)
@@ -85,3 +92,4 @@ output_layer = Dense(units=10, activation='softmax')(dense_layer2)
 ## define the model with input layer and output layer
 model = Model(inputs=input_layer, outputs=output_layer)
 """
+'''
