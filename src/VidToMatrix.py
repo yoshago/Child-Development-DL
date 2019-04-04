@@ -13,14 +13,14 @@ def VidToMatrix(file, label, format, name):
         frame_counter=frame_counter+1
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if format==1:
-            gray = gray[40:380, 23:363]
+            gray = gray[23:363, 40:380]
         elif format==2:
             gray = gray[0:340, 0:340]
-            gray = np.pad(gray,((0,0),(0,4)),'constant')
+            gray = np.pad(gray,((0,4),(0,0)),'constant')
         elif format==3:
-            gray = gray[0:340, 20:360]
+            gray = gray[20:360, 0:340]
         elif format==4:
-            gray = gray[0:340, 23:363]                     
+            gray = gray[23:363, 0:340]
         
         
         frames.append(gray)
