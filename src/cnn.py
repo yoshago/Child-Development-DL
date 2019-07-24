@@ -1,95 +1,138 @@
 
 import pickle
 import tensorflow as tf
-
+from keras.layers import Dense, Flatten
 import numpy as np
 from keras.layers.convolutional import (MaxPooling3D, Conv3D)
 from keras.models import Sequential
-
-
-with open('Data/data' + str(16) + '.txt', 'rb') as test_video:
-    test_record_array = pickle.load(test_video)
-    for i in test_record_array:
-        i.matrix=np.array(i.matrix)
-        print(i.matrix.shape)
-
-'''
-#define test
-with open('Data/data' + str(16) + '.txt', 'rb') as test_video:
-    test_record_array = pickle.load(test_video)
-    x_test=np.array([test_record_array[i][0]for i in range(len(test_record_array)-1)])
-    y_test=np.array([test_record_array[i][1]for i in range(len(test_record_array)-1)])
-
-# train the model
-x_train=[]
-for j in range(1, 15):
-    with open('Data/data' + str(j) + '.txt', 'rb') as video:
-        records_array=np.array(pickle.load(video))
-        print('the ' + str(j)+ ' video, shape: '+str(records_array.shape))
-        for i in range(len(records_array) - 1):
-            x_train.append(records_array[i][0])
-            #print(x_train.shape)
-            y_train=np.array([records_array[i][1]for i in range(len(records_array)-1)])
-    x_train = np.array(x_train)
-    x_train.reshape(-1,len(records_array) - 1,150,355,355)
-    y_train.reshape(-1, 1)
-
-# There are four array:
-
-print(x_train.shape)
-print(y_train.shape)
-print(x_test.shape)
-print(y_test.shape)
+from random import shuffle, random
 
 model = Sequential()
 
 #first layer
-model.add(Conv3D(64, (3, 3, 3), activation='relu',border_mode='same', name='conv1',subsample=(1, 1, 1), input_shape=(150,355,355,1)))
-model.add(MaxPooling3D(pool_size=(1, 2, 2), strides=(1, 2, 2), border_mode='valid', name='pool1'))
+model.add(Conv3D(10, (10, 10, 10), activation='relu', border_mode='same', name='conv1',subsample=(1, 1, 1), input_shape=(1,50,85,85)))
+model.add(MaxPooling3D(pool_size=(2, 2, 2), strides=(2, 2, 2), border_mode='same', name='pool1'))
 #2nd layer group
-model.add(Conv3D(128, 3, 3, 3, activation='relu', border_mode='same', name='conv2', subsample=(1, 1, 1)))
-model.add(MaxPooling3D(pool_size=(2, 2, 2), strides=(2, 2, 2), border_mode='valid', name='pool2'))
+model.add(Conv3D(15, 5, 5, 5, activation='relu', border_mode='same', name='conv2', subsample=(1, 1, 1)))
+model.add(MaxPooling3D(pool_size=(2, 2, 2), strides=(2, 2, 2), border_mode='same', name='pool2'))
 # 3rd layer group
-model.add(Conv3D(256, 3, 3, 3, activation='relu', border_mode='same', name='conv3a', subsample=(1, 1, 1)))
-model.add(Conv3D(256, 3, 3, 3, activation='relu', border_mode='same', name='conv3b', subsample=(1, 1, 1)))
-model.add(MaxPooling3D(pool_size=(2, 2, 2), strides=(2, 2, 2), border_mode='valid', name='pool3'))
-
-
-
+model.add(Conv3D(20, 3, 3, 3, activation='relu', border_mode='same', name='conv3a', subsample=(1, 1, 1)))
+model.add(MaxPooling3D(pool_size=(2, 2, 2), strides=(2, 2, 2), border_mode='same', name='pool3'))
+model.add(Flatten())
+model.add(Dense(500, activation='sigmoid'))
+model.add(Dense(4, activation='softmax'))
 # compile model using accuracy to measure model performance
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=1)
 
-#        model.predict(i[0])
-#       print('ACTUAL VALUE IS: ' +str(i[1])+'\n')
+#import os
+#print(os.getcwd())
 
-""",validation_data=(x_test, y_test), epochs=3,shuffle=True"""
-"""
-## convolutional layers
-conv_layer1 = Conv3D(filters=8, kernel_size=(3, 3, 3), activation='relu')(input_layer)
-conv_layer2 = Conv3D(filters=16, kernel_size=(3, 3, 3), activation='relu')(conv_layer1)
+#load data key
+with open('Data/compressed_data/data_key_new.txt', 'rb') as data_key:
+    data_key = np.array(pickle.load(data_key))
+#each of thus data keys storage locations of data of class 1/2/3/4
+print(data_key[0])
+data_key_class1=data_key[0]
+data_key_class2=data_key[1]
+data_key_class3=data_key[2]
+data_key_class4=data_key[3]
+shuffle(data_key_class1)
+shuffle(data_key_class2)
+shuffle(data_key_class3)
+shuffle(data_key_class4)
+#use for real-time debuging
+print("class1 data length: " + str(len(data_key_class1)))
+print("class2 data length: " + str(len(data_key_class2)))
+print("class3 data length: " + str(len(data_key_class3)))
+print("class4 data length: " + str(len(data_key_class4)))
 
-## add max pooling to obtain the most imformatic features
-pooling_layer1 = MaxPool3D(pool_size=(2, 2, 2))(conv_layer2)
+#we use thus flags and counters to stop when we done pass throw all the data
+flag1=True
+flag2=True
+flag3=True
+flag4=True
 
-conv_layer3 = Conv3D(filters=32, kernel_size=(3, 3, 3), activation='relu')(pooling_layer1)
-conv_layer4 = Conv3D(filters=64, kernel_size=(3, 3, 3), activation='relu')(conv_layer3)
-pooling_layer2 = MaxPool3D(pool_size=(2, 2, 2))(conv_layer4)
+cntr_class1=0
+cntr_class2=0
+cntr_class3=0
+cntr_class4=0
 
-## perform batch normalization on the convolution outputs before feeding it to MLP architecture
-pooling_layer2 = BatchNormalization()(pooling_layer2)
-flatten_layer = Flatten()(pooling_layer2)
+x_train=[]
+y_train=[]
 
-## create an MLP architecture with dense layers : 4096 -> 512 -> 10
-## add dropouts to avoid overfitting / perform regularization
-dense_layer1 = Dense(units=2048, activation='relu')(flatten_layer)
-dense_layer1 = Dropout(0.4)(dense_layer1)
-dense_layer2 = Dense(units=512, activation='relu')(dense_layer1)
-dense_layer2 = Dropout(0.4)(dense_layer2)
-output_layer = Dense(units=10, activation='softmax')(dense_layer2)
+#thre is 95 files of data, each of them divided for samples. the data_key array (from above) contains locations and classifications).
+#file_num-is the number of file that contains the current sample to train
+#sample_num-is the number of current sample
+#cntr_class and flag used to update the flags and cntr_class(from above)
+def add_train_data(file_num,sample_num,cntr_class, flag):
+    with open('Data/compressed_data/data' + str(file_num) + '.txt', 'rb') as video:
+        video = np.array(pickle.load(video))
+    tmp = np.array(video[sample_num].matrix).reshape(1, 50, 85, 85).astype(np.int8)
+    x_train.append(tmp)
+    y_train.append(video[sample_num].label)
+    cntr_class = (cntr_class + 1) % len(data_key_class1)
+    if (cntr_class == 0):
+        flag = False
+    return cntr_class, flag
 
-## define the model with input layer and output layer
-model = Model(inputs=input_layer, outputs=output_layer)
-"""
-'''
+def randomal_train(rand):
+    if (rand > 0.8 and rand < 0.85):
+        for i in range(25):
+            cntr_class1 = add_train_data(int(data_key_class1[cntr_class1]) / 100, data_key_class1[cntr_class1] % 100, cntr_class1, flag1)
+        cntr_class1 = (cntr_class1 - 25) % len(data_key_class1)
+    if (rand > 0.85 and rand < 0.9):
+        for i in range(25):
+            cntr_class2 = add_train_data(int(data_key_class2[cntr_class2]) / 100, data_key_class2[cntr_class2] % 100, cntr_class2, flag1)
+        cntr_class2 = (cntr_class2 - 25) % len(data_key_class2)
+    if (rand > 0.9 and rand < 0.95):
+        for i in range(25):
+            cntr_class3 = add_train_data(int(data_key_class3[cntr_class3]) / 100, data_key_class3[cntr_class3] % 100, cntr_class3, flag3)
+        cntr_class3 = (cntr_class3 - 25) % len(data_key_class3)
+    if (rand > 0.95 and rand < 1.0):
+        for i in range(25):
+            cntr_class4 = add_train_data(int(data_key_class4[cntr_class4]) / 100, data_key_class4[cntr_class4] % 100, cntr_class4, flag1)
+        cntr_class4 = (cntr_class4 - 25) % len(data_key_class4)
+    else:
+        return
+    Y_train = np.array(y_train)
+    X_train = np.array(x_train)
+    model.fit(X_train, Y_train, epochs=5, batch_size=25)
+
+
+#because there's too big data for the RAM, the train shuld be modified half manually as below
+#as you can see each batch include 100 tain samples(we added chance to train the model on one type of data, to make him out from local minimum
+while(flag1 or flag2 or flag3 or flag4):
+    for i in range(25):
+        cntr_class1, flag1 = add_train_data(int(data_key_class1[cntr_class1] / 100),data_key_class1[cntr_class1] % 100, cntr_class1, flag1)
+        cntr_class2, flag2 = add_train_data(int(data_key_class2[cntr_class2] / 100),data_key_class2[cntr_class2] % 100, cntr_class2, flag2)
+        cntr_class3, flag3 = add_train_data(int(data_key_class3[cntr_class3] / 100),data_key_class3[cntr_class3] % 100, cntr_class3, flag3)
+        cntr_class3, flag4 = add_train_data(int(data_key_class4[cntr_class4] / 100),data_key_class4[cntr_class4] % 100, cntr_class4, flag4)
+    y_train = np.array(y_train)
+    x_train = np.array(x_train).astype(np.int8)
+
+    model.fit(x_train, y_train, epochs=10, batch_size=100)
+##x_train = []
+##  y_train = []
+##    rand=random()
+##    randomal_train(rand)
+    x_train = []
+    y_train = []
+
+
+x_test=[]
+for j in range(1, 95):
+    with open('../Data/compressed_data/data' + str(j) + '.txt', 'rb') as video:
+        test_records = np.array(pickle.load(video))
+        if (int(test_records[0].name)== 4 or int(test_records[0].name) == 5 or int(test_records[0].name) == 19 or int(test_records[0].name) == 11):
+            for i in test_records:
+                tmp = np.array(i.matrix).reshape(50*85*85)
+                x_test.append(tmp)
+            x_test=np.array(x_test)
+            predictions = model.predict(x_test)
+            print("suppose to be:" + str(test_records[0].label) )
+            print(predictions)
+            x_test = []
+
+
+
