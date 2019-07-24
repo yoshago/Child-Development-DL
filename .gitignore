@@ -42,6 +42,6 @@ m4/lt~obsolete.m4
 autom4te.cache
 
 # added manualy
-
+.idea/workspace.xml
 .idea
 Data/
